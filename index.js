@@ -1,7 +1,7 @@
 const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -26,6 +26,56 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+
+    const taskCollection = client.db("task-management").collection("allTask");
+
+    // all Task Collection -->
+    app.get("/allTask", async (req, res) => {
+      // const email = req.query.email;
+      // const query = { email: email };
+      const result1 = await taskCollection.find().toArray();
+      // const result2 = await taskCollection.find(query).toArray();
+      res.send(result1);
+    });
+
+    app.get("/allTask/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const result = await taskCollection.findOne(filter);
+      res.send(result);
+    });
+
+    app.post("/allTask", async (req, res) => {
+      const task = req.body;
+      const result = await taskCollection.insertOne(task);
+      res.send(result);
+    });
+
+    app.put("/allTask/:id", async (req, res) => {
+      const id = req.params.id;
+      const editInfo = req.body;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          name: editInfo.name,
+          email: editInfo.email,
+          title: editInfo.title,
+          descriptions: editInfo.descriptions,
+          date_form: editInfo.date_form,
+          date_too: editInfo.date_too,
+          priority: editInfo.priority,
+        },
+      };
+      const result = await taskCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+    app.delete("/allTask/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await taskCollection.deleteOne(query);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
