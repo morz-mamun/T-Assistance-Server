@@ -31,11 +31,17 @@ async function run() {
 
     // all Task Collection -->
     app.get("/allTask", async (req, res) => {
-      // const email = req.query.email;
-      // const query = { email: email };
-      const result1 = await taskCollection.find().toArray();
-      // const result2 = await taskCollection.find(query).toArray();
-      res.send(result1);
+      let query = {};
+      if (req.query?.email) {
+        query = { email: req.query.email };
+      }
+      const result = await taskCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    app.get("/allTask", async (req, res) => {
+      const result = await taskCollection.find().toArray();
+      res.send(result);
     });
 
     app.get("/allTask/:id", async (req, res) => {
