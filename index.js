@@ -35,12 +35,12 @@ async function run() {
       if (req.query?.email) {
         query = { email: req.query.email };
       }
-      const result = await taskCollection.find(query).toArray();
+      const result = await taskCollection.find(query).sort({ _id: -1 }).toArray();
       res.send(result);
     });
 
     app.get("/allTask", async (req, res) => {
-      const result = await taskCollection.find().toArray();
+      const result = await taskCollection.find().sort({ _id: -1 }).toArray();
       res.send(result);
     });
 
