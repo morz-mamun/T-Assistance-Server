@@ -29,7 +29,7 @@ async function run() {
 
     const taskCollection = client.db("task-management").collection("allTask");
 
-    // all Task Collection -->
+    // all Task Collection by user -->
     app.get("/allTask", async (req, res) => {
       let query = {};
       if (req.query?.email) {
@@ -53,9 +53,47 @@ async function run() {
 
     app.post("/allTask", async (req, res) => {
       const task = req.body;
-      const result = await taskCollection.insertOne(task);
-      res.send(result);
+      const taskWithStatus = {
+        ...task,
+        status: "backlog"
+      };
+    
+      try {
+        const result = await taskCollection.insertOne(taskWithStatus);
+        res.send(result);
+      } catch (error) {
+        res.status(500).send({ error: "Failed to insert task" });
+      }
     });
+    
+    app.patch("/allTask/:id", async (req, res) => {
+      const id = req.params.id; // Get task ID from URL params
+      const { status } = req.body; // Get status from the request body
+    
+      // Ensure a valid status value is passed
+      if (!status) {
+        return res.status(400).send({ error: "Status is required" });
+      }
+    
+      // Update the status of the task
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          status: status, // Update only the status field
+        },
+      };
+    
+      try {
+        const result = await taskCollection.updateOne(filter, updateDoc);
+        if (result.modifiedCount === 0) {
+          return res.status(404).send({ error: "Task not found or already updated" });
+        }
+        res.send({ message: "Task status updated successfully" });
+      } catch (error) {
+        res.status(500).send({ error: "Failed to update task status" });
+      }
+    });
+    
 
     app.put("/allTask/:id", async (req, res) => {
       const id = req.params.id;
