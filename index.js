@@ -1,4 +1,5 @@
 const express = require("express");
+const helmet = require("helmet");
 require("dotenv").config();
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
@@ -6,6 +7,18 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // middleware
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "https://vercel.live"], // Allow Vercel live reload scripts
+        connectSrc: ["'self'", "https://vercel.live"], // Allow connections to Vercel for live reloads
+        // Add other directives as needed
+      },
+    },
+  })
+);
 app.use(cors());
 app.use(express.json());
 
