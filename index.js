@@ -67,19 +67,17 @@ async function run() {
     });
     
     app.patch("/allTask/:id", async (req, res) => {
-      const id = req.params.id; // Get task ID from URL params
-      const { status } = req.body; // Get status from the request body
-    
-      // Ensure a valid status value is passed
+      const id = req.params.id; 
+      const { status } = req.body; 
+
       if (!status) {
         return res.status(400).send({ error: "Status is required" });
       }
     
-      // Update the status of the task
       const filter = { _id: new ObjectId(id) };
       const updateDoc = {
         $set: {
-          status: status, // Update only the status field
+          status: status, 
         },
       };
     
@@ -113,6 +111,7 @@ async function run() {
       const result = await taskCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
+
     app.delete("/allTask/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
