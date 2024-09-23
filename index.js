@@ -12,9 +12,8 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "https://vercel.live"], // Allow Vercel live reload scripts
-        connectSrc: ["'self'", "https://vercel.live"], // Allow connections to Vercel for live reloads
-        // Add other directives as needed
+        scriptSrc: ["'self'", "https://vercel.live"], 
+        connectSrc: ["'self'", "https://vercel.live"],
       },
     },
   })
@@ -52,10 +51,10 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/allTask", async (req, res) => {
-      const result = await taskCollection.find().sort({ _id: -1 }).toArray();
-      res.send(result);
-    });
+    // app.get("/allTask", async (req, res) => {
+    //   const result = await taskCollection.find().sort({ _id: -1 }).toArray();
+    //   res.send(result);
+    // });
 
     app.get("/allTask/:id", async (req, res) => {
       const id = req.params.id;
