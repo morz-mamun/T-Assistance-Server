@@ -10,10 +10,12 @@ const port = process.env.PORT || 5000;
 app.use(
   helmet({
     contentSecurityPolicy: {
+      useDefaults: true, // Default rules for secure headers
       directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "https://vercel.live"], 
-        connectSrc: ["'self'", "https://vercel.live"],
+        defaultSrc: ["'self'"], // Only allow resources from the same origin
+        scriptSrc: ["'self'", "https://vercel.live"], // Allow scripts from Vercel
+        objectSrc: ["'none'"], // Disallow Flash/other plugins
+        upgradeInsecureRequests: [], // Optional: upgrade HTTP to HTTPS automatically
       },
     },
   })
@@ -45,7 +47,7 @@ async function run() {
     app.get("/allTask", async (req, res) => {
       let query = {};
       if (req.query?.email) {
-        query = { email: req.query.email };
+        query = { email: req.query.email || "" };
       }
       const result = await taskCollection.find(query).sort({ _id: -1 }).toArray();
       res.send(result);
